@@ -1,0 +1,28 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+*.nes
+!public/demo.nes
+.env
+.DS_Store
+
+.data/
+
+releases/
+
+*.pl.o
+
+# Local caches, generated native objects and private environment files
+npm-cache/
+.env.*
+!.env.example
+*.o
+*.log
+
+# Private ROMs and saves (the project-generated demo is the only exception)
+*.[nN][eE][sS]
+!public/demo.nes
+*.sav
+*.srm
+*.pls

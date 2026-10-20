@@ -1,0 +1,28 @@
+{
+  "name": "pixel-link",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "NES emulator with two-player network rooms and customizable controls",
+  "scripts": {
+    "dev": "node server/index.js --dev",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "node --test tests/*.test.js",
+    "test:browser": "playwright test",
+    "demo": "node scripts/create-demo.js",
+    "library": "node scripts/library.js",
+    "build:core": "sh scripts/build-core.sh",
+    "test:production": "playwright test -c playwright.production.config.js"
+  },
+  "dependencies": {
+    "js-sha256": "^0.11.1",
+    "jsnes": "2.1.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "vite": "^7.3.1"
+  },
+  "license": "GPL-2.0-or-later"
+}

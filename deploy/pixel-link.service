@@ -1,0 +1,19 @@
+[Unit]
+Description=Pixel Link NES server
+After=network.target
+
+[Service]
+Type=simple
+User=pixellink
+Group=pixellink
+WorkingDirectory=/opt/pixel-link
+Environment=NODE_ENV=production
+Environment=PORT=4178
+Environment=LIBRARY_DIR=/srv/pixel-link/roms
+Environment=LIBRARY_WEB_MANAGEMENT=0
+ExecStart=/usr/bin/node /opt/pixel-link/server/index.js
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
