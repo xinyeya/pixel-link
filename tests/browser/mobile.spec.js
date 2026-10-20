@@ -28,6 +28,11 @@ test('fullscreen contains joystick and action buttons; landscape layout fits and
  for(const selector of ['#joystick','[aria-label="A 键"]','[aria-label="B 键"]','#exit-fullscreen']){
   const box=await page.locator(selector).boundingBox();expect(box.x).toBeGreaterThanOrEqual(0);expect(box.y).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(845);expect(box.y+box.height).toBeLessThanOrEqual(391);
  }
+ const screenBox=await page.locator('#screen-shell').boundingBox(),systemBox=await page.locator('.touch-system').boundingBox();
+ expect(screenBox.height).toBeGreaterThanOrEqual(390);expect(screenBox.width).toBeGreaterThanOrEqual(840);expect(systemBox.y).toBeGreaterThan(screenBox.y);expect(systemBox.y+systemBox.height).toBeLessThanOrEqual(screenBox.y+screenBox.height);
+ const stickBox=await page.locator('#joystick').boundingBox(),actionBox=await page.getByRole('button',{name:'A 键',exact:true}).boundingBox();
+ expect(stickBox.x).toBeGreaterThan(844*.1);expect(844-actionBox.x-actionBox.width).toBeGreaterThan(844*.08);
+ await page.locator('.touch-system button[data-bit="3"]').dispatchEvent('pointerdown',{pointerId:90,pointerType:'touch'});await buttons(page,8);await page.locator('.touch-system button[data-bit="3"]').dispatchEvent('pointerup',{pointerId:90,pointerType:'touch'});await buttons(page,0);
  await page.screenshot({path:'test-results/mobile-landscape-fullscreen.png'});
  const cdp=await context.newCDPSession(page),stick=finger(1,await point(page.locator('#joystick'),32,0)),action=finger(2,await point(page.getByRole('button',{name:'A 键',exact:true})));
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[stick,action]});await buttons(page,129);await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});await buttons(page,0);
@@ -45,4 +50,12 @@ test('losing focus clears all touch state instead of leaving movement held',asyn
  const {context,page}=await setup(browser);const cdp=await context.newCDPSession(page);await page.locator('#joystick').scrollIntoViewIfNeeded();
  const stick=finger(1,await point(page.locator('#joystick'),30,30));await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[stick]});await buttons(page,160);
  await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await buttons(page,0);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await context.close();
+});
+
+
+test('compact landscape keeps inset controls separated from system buttons',async({browser})=>{
+ const {context,page}=await setup(browser,{width:568,height:320});await page.locator('#fullscreen').tap();await expect(page.locator('#game-stage')).toHaveClass(/is-immersive/);
+ const stick=await page.locator('#joystick').boundingBox(),actions=await page.locator('.touch-action').boundingBox(),system=await page.locator('.touch-system').boundingBox();
+ expect(stick.x).toBeGreaterThan(568*.1);expect(568-actions.x-actions.width).toBeGreaterThan(568*.08);expect(stick.x+stick.width).toBeLessThan(system.x);expect(system.x+system.width).toBeLessThan(actions.x);
+ await page.screenshot({path:'test-results/mobile-compact-fullscreen.png'});await context.close();
 });
